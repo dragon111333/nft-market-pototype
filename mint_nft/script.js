@@ -387,29 +387,27 @@ d.querySelector("#nft_mint_btn").addEventListener("click",async ()=>{
         let contractAddr = "0xc7d137a0fdb161ca56c001223751306ecd21d0f6";
         let web3 = new Web3();
         window.contract = await new web3.eth.Contract(contractABI,contractAddr);
-        $.get(d.querySelector("#meta_data_url").value,async (response)=>{
-            const txParam = {
-                to:contractAddr,
-                from:window.ethereum.selectedAddress,
-                "data":window.contract.methods.mintNFT(window.ethereum.selectedAddress,response).encodeABI()
-            };
-            try{
-                window.ethereum.request({
-                    method : "eth_sendTransaction",
-                    params : [txParam]
-                }).then((txHash)=>{
-                    console.log(txHash);
-                    d.querySelector("#status_box").hidden = false;
-                    d.querySelector("#status_box").innerHTML = `สำเร็จ!! ตรวจสอบได้ที่ <a href="https://ropsten.etherscan.io/tx/${txHash}" target="_blank">etherscan.io</a>!`;
-                    d.querySelector("#status_box").className = "alert alert-success";
-                });
-            }catch(err){
+        const txParam = {
+          to:contractAddr,
+          from:window.ethereum.selectedAddress,
+          "data":window.contract.methods.mintNFT(window.ethereum.selectedAddress,d.querySelector("#meta_data_url").value).encodeABI()
+        };
+        try{
+            window.ethereum.request({
+                method : "eth_sendTransaction",
+                params : [txParam]
+            }).then((txHash)=>{
+                console.log(txHash);
                 d.querySelector("#status_box").hidden = false;
-                d.querySelector("#status_box").innerHTML = "เกิดข้อผิดพลาด!";
-                d.querySelector("#status_box").className = "alert alert-danger";
-                console.log(`Error! ${err}`);
-                return;
-            }
-        });
+                d.querySelector("#status_box").innerHTML = `สำเร็จ!! ตรวจสอบได้ที่ <a href="https://ropsten.etherscan.io/tx/${txHash}" target="_blank">etherscan.io</a>!`;
+                d.querySelector("#status_box").className = "alert alert-success";
+            });
+        }catch(err){
+            d.querySelector("#status_box").hidden = false;
+            d.querySelector("#status_box").innerHTML = "เกิดข้อผิดพลาด!";
+            d.querySelector("#status_box").className = "alert alert-danger";
+            console.log(`Error! ${err}`);
+            return;
+        }
     }
 });
